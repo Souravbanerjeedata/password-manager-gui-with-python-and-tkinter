@@ -1,16 +1,25 @@
 from tkinter import *
-import os
 from tkinter import messagebox
+import os
 from random import choice, randint, shuffle
 import pyperclip
 
 # ---------------------------- CONSTANTS ------------------------------- #
-RED = "#e7305b"
-FONT_NAME = "Courier"
+BG_COLOR = "#1a1a2e"
+CARD_BG = "#16213e"
+ACCENT = "#e94560"
+ACCENT_HOVER = "#ff6b81"
+TEXT_COLOR = "#eaeaea"
+LABEL_COLOR = "#a0a0c0"
+ENTRY_BG = "#0f3460"
+ENTRY_FG = "#ffffff"
+FONT_NAME = "Segoe UI"
+FONT_BOLD = ("Segoe UI", 11, "bold")
+FONT_NORMAL = ("Segoe UI", 10)
+FONT_TITLE = ("Segoe UI", 16, "bold")
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
-#Password Generator Project
 def generate_password():
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -35,7 +44,10 @@ def save():
     if len(website) == 0 or len(password) == 0:
         messagebox.showinfo(title="Oops!", message="Please make sure you have not left any fields empty.")
     else:
-        is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered:\nEmail: {email}\nPassword: {password}\nIs this okay to save?")
+        is_ok = messagebox.askokcancel(
+            title=website,
+            message=f"These are the details entered:\nEmail: {email}\nPassword: {password}\nIs this okay to save?"
+        )
         if is_ok:
             with open('password.txt', 'a') as data_file:
                 data_file.write(f"{website} | {email} | {password}\n")
@@ -45,39 +57,128 @@ def save():
 # ---------------------------- UI SETUP ------------------------------- #
 script_dir = os.path.dirname(os.path.abspath(__file__))
 logo_path = os.path.join(script_dir, "logo.png")
+
 window = Tk()
-window.title('Password Manager')
-window.config(padx=50, pady=50)
+window.title("Password Manager")
+window.config(padx=40, pady=30, bg=BG_COLOR)
+window.resizable(False, False)
 
-# logo
-canvas = Canvas(width=200, height=200, highlightthickness=0)
+# Try to set a nice window icon / modern look
+try:
+    window.tk.call("tk", "scaling", 1.2)
+except Exception:
+    pass
+
+# Main card frame
+card = Frame(window, bg=CARD_BG, padx=30, pady=25)
+card.grid(row=0, column=0)
+
+# Logo
+canvas = Canvas(card, width=200, height=200, bg=CARD_BG, highlightthickness=0)
 logo_img = PhotoImage(file=logo_path)
-canvas.create_image(100,100, image=logo_img)
-canvas.grid(row=0, column=1)
+canvas.create_image(100, 100, image=logo_img)
+canvas.grid(row=0, column=0, columnspan=3, pady=(0, 15))
 
-# Input span
+# Title
+title_label = Label(
+    card,
+    text="Password Manager",
+    font=FONT_TITLE,
+    fg=ACCENT,
+    bg=CARD_BG
+)
+title_label.grid(row=1, column=0, columnspan=3, pady=(0, 20))
+
+# Helper to create consistent styled labels
+def make_label(text, row):
+    lbl = Label(
+        card,
+        text=text,
+        font=FONT_BOLD,
+        fg=LABEL_COLOR,
+        bg=CARD_BG,
+        anchor="e"
+    )
+    lbl.grid(row=row, column=0, sticky="e", padx=(0, 12), pady=8)
+    return lbl
+
+# Helper to create consistent styled entries
+def make_entry(width=32, row=None, column=1, columnspan=2):
+    entry = Entry(
+        card,
+        width=width,
+        font=FONT_NORMAL,
+        bg=ENTRY_BG,
+        fg=ENTRY_FG,
+        insertbackground=ENTRY_FG,
+        relief="flat",
+        highlightthickness=1,
+        highlightbackground="#2a2a4a",
+        highlightcolor=ACCENT
+    )
+    entry.grid(row=row, column=column, columnspan=columnspan, sticky="ew", pady=8, ipady=6)
+    return entry
+
 # Labels
-website_label = Label(text='Website:')
-website_label.grid(row=1, column=0)
-username_label = Label(text='Email/Username:')
-username_label.grid(row=2, column=0)
-password_label = Label(text='Password:')
-password_label.grid(row=3, column=0)
+make_label("Website:", 2)
+make_label("Email / Username:", 3)
+make_label("Password:", 4)
 
 # Entries
-website_entry = Entry(width=35)
+website_entry = make_entry(row=2)
 website_entry.focus()
-website_entry.grid(row=1, column=1, columnspan=2)
-username_entry = Entry(width=35)
-username_entry.insert(0, 'sourav@email.com')
-username_entry.grid(row=2, column=1, columnspan=2)
-password_entry = Entry(width=21)
-password_entry.grid(row=3, column=1)
 
-# Buttons
-generate_button = Button(text='Generate Password', command=generate_password)
-generate_button.grid(row=3, column=2)
-add_button = Button(text='Add', width=36, command=save)
-add_button.grid(row=4, column=1, columnspan=2)
+username_entry = make_entry(row=3)
+username_entry.insert(0, "sourav@email.com")
+
+password_entry = make_entry(width=21, row=4, column=1, columnspan=1)
+
+# Styled buttons
+def style_button(btn, primary=False):
+    if primary:
+        btn.config(
+            bg=ACCENT,
+            fg="white",
+            activebackground=ACCENT_HOVER,
+            activeforeground="white",
+            font=FONT_BOLD,
+            relief="flat",
+            cursor="hand2",
+            padx=12,
+            pady=6
+        )
+    else:
+        btn.config(
+            bg="#2a2a4a",
+            fg=TEXT_COLOR,
+            activebackground="#3a3a5a",
+            activeforeground="white",
+            font=FONT_NORMAL,
+            relief="flat",
+            cursor="hand2",
+            padx=10,
+            pady=5
+        )
+
+generate_button = Button(card, text="Generate Password", command=generate_password)
+style_button(generate_button)
+generate_button.grid(row=4, column=2, padx=(8, 0), sticky="ew")
+
+add_button = Button(card, text="Add", width=36, command=save)
+style_button(add_button, primary=True)
+add_button.grid(row=5, column=0, columnspan=3, pady=(20, 5), sticky="ew", ipady=4)
+
+# Subtle footer
+footer = Label(
+    card,
+    text="Passwords are saved locally to password.txt",
+    font=("Segoe UI", 8),
+    fg="#666680",
+    bg=CARD_BG
+)
+footer.grid(row=6, column=0, columnspan=3, pady=(15, 0))
+
+# Make columns expand nicely
+card.columnconfigure(1, weight=1)
 
 window.mainloop()
