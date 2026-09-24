@@ -6,18 +6,19 @@ import pyperclip
 import json
 
 # ---------------------------- CONSTANTS ------------------------------- #
-BG_COLOR = "#1a1a2e"
-CARD_BG = "#16213e"
-ACCENT = "#e94560"
-ACCENT_HOVER = "#ff6b81"
-TEXT_COLOR = "#eaeaea"
-LABEL_COLOR = "#a0a0c0"
-ENTRY_BG = "#0f3460"
-ENTRY_FG = "#ffffff"
+BG_COLOR = "#f7f7f8"          # soft off-white background
+CARD_BG = "#ffffff"           # pure white card
+ACCENT = "#2563eb"            # clean blue accent
+ACCENT_HOVER = "#1d4ed8"      # slightly darker blue on hover
+TEXT_COLOR = "#1f2937"        # near-black text
+LABEL_COLOR = "#6b7280"       # muted gray for labels
+ENTRY_BG = "#f9fafb"          # very light gray for inputs
+ENTRY_FG = "#111827"          # dark text in inputs
+BORDER_COLOR = "#e5e7eb"      # subtle border
 FONT_NAME = "Segoe UI"
 FONT_BOLD = ("Segoe UI", 11, "bold")
 FONT_NORMAL = ("Segoe UI", 10)
-FONT_TITLE = ("Segoe UI", 16, "bold")
+FONT_TITLE = ("Segoe UI", 18, "bold")
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
@@ -94,24 +95,24 @@ except Exception:
     pass
 
 # Main card frame
-card = Frame(window, bg=CARD_BG, padx=30, pady=25)
+card = Frame(window, bg=CARD_BG, padx=36, pady=28, highlightbackground=BORDER_COLOR, highlightthickness=1)
 card.grid(row=0, column=0)
 
 # Logo
 canvas = Canvas(card, width=200, height=200, bg=CARD_BG, highlightthickness=0)
 logo_img = PhotoImage(file=logo_path)
 canvas.create_image(100, 100, image=logo_img)
-canvas.grid(row=0, column=0, columnspan=3, pady=(0, 15))
+canvas.grid(row=0, column=0, columnspan=3, pady=(0, 12))
 
 # Title
 title_label = Label(
     card,
     text="Password Manager",
     font=FONT_TITLE,
-    fg=ACCENT,
+    fg=TEXT_COLOR,
     bg=CARD_BG
 )
-title_label.grid(row=1, column=0, columnspan=3, pady=(0, 20))
+title_label.grid(row=1, column=0, columnspan=3, pady=(0, 24))
 
 # Helper to create consistent styled labels
 def make_label(text, row):
@@ -123,7 +124,7 @@ def make_label(text, row):
         bg=CARD_BG,
         anchor="e"
     )
-    lbl.grid(row=row, column=0, sticky="e", padx=(0, 12), pady=8)
+    lbl.grid(row=row, column=0, sticky="e", padx=(0, 14), pady=8)
     return lbl
 
 # Helper to create consistent styled entries
@@ -137,10 +138,10 @@ def make_entry(width=32, row=None, column=1, columnspan=2):
         insertbackground=ENTRY_FG,
         relief="flat",
         highlightthickness=1,
-        highlightbackground="#2a2a4a",
+        highlightbackground=BORDER_COLOR,
         highlightcolor=ACCENT
     )
-    entry.grid(row=row, column=column, columnspan=columnspan, sticky="ew", pady=8, ipady=6)
+    entry.grid(row=row, column=column, columnspan=columnspan, sticky="ew", pady=8, ipady=7)
     return entry
 
 # Labels
@@ -168,42 +169,47 @@ def style_button(btn, primary=False):
             font=FONT_BOLD,
             relief="flat",
             cursor="hand2",
-            padx=12,
-            pady=6
+            padx=14,
+            pady=7,
+            bd=0
         )
     else:
         btn.config(
-            bg="#2a2a4a",
+            bg="#f3f4f6",
             fg=TEXT_COLOR,
-            activebackground="#3a3a5a",
-            activeforeground="white",
+            activebackground="#e5e7eb",
+            activeforeground=TEXT_COLOR,
             font=FONT_NORMAL,
             relief="flat",
             cursor="hand2",
-            padx=10,
-            pady=5
+            padx=12,
+            pady=6,
+            bd=0,
+            highlightthickness=1,
+            highlightbackground=BORDER_COLOR
         )
+
 search_button = Button(card, text="Search", command=find_password)
 style_button(search_button)
-search_button.grid(row=2, column=2, padx=(8, 0), sticky="ew")
+search_button.grid(row=2, column=2, padx=(10, 0), sticky="ew")
 
 generate_button = Button(card, text="Generate Password", command=generate_password)
 style_button(generate_button)
-generate_button.grid(row=4, column=2, padx=(8, 0), sticky="ew")
+generate_button.grid(row=4, column=2, padx=(10, 0), sticky="ew")
 
 add_button = Button(card, text="Add", width=36, command=save)
 style_button(add_button, primary=True)
-add_button.grid(row=5, column=0, columnspan=3, pady=(20, 5), sticky="ew", ipady=4)
+add_button.grid(row=5, column=0, columnspan=3, pady=(24, 6), sticky="ew", ipady=5)
 
 # Subtle footer
 footer = Label(
     card,
-    text="Passwords are saved locally to password.txt",
+    text="Passwords are saved locally to data.json",
     font=("Segoe UI", 8),
-    fg="#666680",
+    fg="#9ca3af",
     bg=CARD_BG
 )
-footer.grid(row=6, column=0, columnspan=3, pady=(15, 0))
+footer.grid(row=6, column=0, columnspan=3, pady=(16, 0))
 
 # Make columns expand nicely
 card.columnconfigure(1, weight=1)
