@@ -21,6 +21,10 @@ Generate strong passwords, save credentials locally, and quickly look them up â€
 
 ## Screenshots
 
+<div align="center">
+  <img src="preview.png" width="419" height="515" />
+</div>
+
 > The app features a simple card-based layout with logo, input fields, and action buttons.
 
 ---
