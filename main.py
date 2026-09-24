@@ -62,6 +62,22 @@ def save():
             website_entry.delete(0, END)
             password_entry.delete(0, END)
 
+# ---------------------------- FIND PASSWORD ------------------------------- #
+def find_password():
+    website = website_entry.get()
+    try:
+        with open('data.json') as data_file:
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showerror(title='Error', message='No data file found.')
+    else:
+        if website in data:
+            email = data[website]['email']
+            password = data[website]['password']
+            messagebox.showinfo(title=website, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.showerror(title="Error", message=f"No detail for {website} exists.")
+
 # ---------------------------- UI SETUP ------------------------------- #
 script_dir = os.path.dirname(os.path.abspath(__file__))
 logo_path = os.path.join(script_dir, "logo.png")
@@ -133,7 +149,7 @@ make_label("Email / Username:", 3)
 make_label("Password:", 4)
 
 # Entries
-website_entry = make_entry(row=2)
+website_entry = make_entry(width=21, row=2, column=1, columnspan=1)
 website_entry.focus()
 
 username_entry = make_entry(row=3)
@@ -167,6 +183,9 @@ def style_button(btn, primary=False):
             padx=10,
             pady=5
         )
+search_button = Button(card, text="Search", command=find_password)
+style_button(search_button)
+search_button.grid(row=2, column=2, padx=(8, 0), sticky="ew")
 
 generate_button = Button(card, text="Generate Password", command=generate_password)
 style_button(generate_button)
